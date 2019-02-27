@@ -1,0 +1,12 @@
+{{define "blog"}}
+<div class="col-sm-8 blog-main">
+{{range .BlogPosts}}
+    <div class="{{.Single}}blog-post">
+        <h2 class="blog-post-title">{{.Name}}</h2>
+        <p class="blog-post-meta">{{.PublishDate}} by <a href="/about">Charlton Austin</a></p>
+    {{.Content}}
+    </div><!-- /.blog-post -->
+{{ end }}
+{{ template "pager" .}}
+</div><!-- /.blog-main -->
+{{ end }}
