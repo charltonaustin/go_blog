@@ -2,3 +2,5 @@ github.com/gomarkdown/markdown v0.0.0-20190222000725-ee6a7931a1e4 h1:vELsocEzlhM
 github.com/gomarkdown/markdown v0.0.0-20190222000725-ee6a7931a1e4/go.mod h1:gmFANS06wAVmF0B9yi65QKsRmPQ97tze7FRLswua+OY=
 github.com/gorilla/mux v1.7.0 h1:tOSd0UKHQd6urX6ApfOn4XdBMY6Sh1MfxV3kmaazO+U=
 github.com/gorilla/mux v1.7.0/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=
+github.com/mailgun/godebug v0.0.0-20170609050446-bfb01ae9c266 h1:iLyCLPGaKJGKzTJKqmKaS0whm7Pj0Cl0AaDV45bWf7o=
+github.com/mailgun/godebug v0.0.0-20170609050446-bfb01ae9c266/go.mod h1:RCjtZiMngWSMmhoPeIsJvTZeWJnY6533CpN0GhHy2Wg=

@@ -4,8 +4,8 @@
     <title>Something bad happened</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="js/bootstrap.min.js"></script>
-    <script src="css/bootstrap-theme.min.css"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/css/bootstrap-theme.min.css"></script>
     <style type="text/css">
         html {
             height: 100%;
@@ -41,12 +41,8 @@
                 <div class="text-center">
                     <h1><span class="text-danger">Error: {{.Status}}</span></h1>
                     <hr>
-                    {% if title %}
                     <h2 class="without-margin">{{.Title}}</h2>
-                    {% endif %}
-                    {% if message %}
                     <h4 class="text-danger">{{.Message}}</h4>
-                    {% endif %}
                     <a href="/">Please head back to the home page!</a>
                 </div>
             </div>
