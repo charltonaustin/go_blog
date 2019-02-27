@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gomarkdown/markdown"
 	"github.com/gorilla/mux"
 	"html/template"
 	"log"
@@ -12,7 +13,7 @@ type blogPost struct {
 	Single      string
 	Name        string
 	PublishDate string
-	Content     string
+	Content     template.HTML
 }
 
 type archiveLinks struct {
@@ -21,6 +22,8 @@ type archiveLinks struct {
 func main() {
 	log.Printf("Listening on %v; ctrl + c to stop", ":9000")
 	router := mux.NewRouter()
+	md := []byte("## markdown document")
+	output := markdown.ToHTML(md, nil, nil)
 	router.Methods("GET").Path("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tmpl := template.Must(template.ParseFiles("templates/base.html", "templates/home.html", "templates/blog.html",  "templates/sidebar.html", "templates/pager.html"))
 		tmpl.Execute(w, struct {
@@ -43,7 +46,7 @@ func main() {
 				Single:      "single-",
 				Name:        "post name",
 				PublishDate: time.Now().Format("2006-01-02"),
-				Content:     "post content",
+				Content:     template.HTML(output),
 			}},
 			Previous: "previous",
 			Next: "next",
@@ -62,8 +65,8 @@ func main() {
 			DescriptionTag: "description tag",
 			Content:        "This is the about page",
 			TitleTag:       "This is a title",
-			HomeActive:     "active",
-			AboutActive:    "",
+			HomeActive:     "",
+			AboutActive:    "active",
 
 		})
 	}))
