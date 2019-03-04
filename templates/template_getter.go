@@ -5,18 +5,32 @@ import (
 	"html/template"
 )
 
+//ErrorTemplateGetter gets templates for error handler
 type ErrorTemplateGetter struct {
+	path string
 }
 
+//NewErrorTemplateGetter returns new
+func NewErrorTemplateGetter(path string) ErrorTemplateGetter {
+	return ErrorTemplateGetter{path: path}
+}
+
+//GetTemplate for errors
+func (b ErrorTemplateGetter) GetTemplate() interfaces.Executor {
+	return template.Must(template.ParseFiles(b.path + "/templates/error.html"))
+}
+
+//BlogTemplateGetter gets templates for blog post
 type BlogTemplateGetter struct {
 	path string
 }
 
+//NewBlogTemplateGetter returns new
 func NewBlogTemplateGetter(path string) BlogTemplateGetter {
 	return BlogTemplateGetter{path: path}
 }
 
-
+//GetTemplate gets templates for blog post
 func (b BlogTemplateGetter) GetTemplate() interfaces.Executor {
 	return template.Must(template.ParseFiles(
 		b.path+"/templates/base.html",
@@ -27,16 +41,20 @@ func (b BlogTemplateGetter) GetTemplate() interfaces.Executor {
 	))
 }
 
+//AboutPageGetter gets templates for about page
 type AboutPageGetter struct {
 	path string
 }
 
+//NewAboutPageGetter returns new
 func NewAboutPageGetter(path string) AboutPageGetter {
 	return AboutPageGetter{path: path}
 }
+
+//GetTemplate gets templates for about page
 func (a AboutPageGetter) GetTemplate() interfaces.Executor {
 	return template.Must(template.ParseFiles(
-		a.path + "/templates/base.html",
-		a.path + "/templates/about.html",
+		a.path+"/templates/base.html",
+		a.path+"/templates/about.html",
 	))
 }

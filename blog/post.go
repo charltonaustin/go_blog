@@ -10,16 +10,19 @@ import (
 	"time"
 )
 
+//ContentGetter manages getting post data
 type ContentGetter struct {
 	path string
 }
 
+//NewPostGetter returns new
 func NewPostGetter(path string) ContentGetter {
 	return ContentGetter{
 		path: path,
 	}
 }
 
+//GetBlogPostData gets post data
 func (c ContentGetter) GetBlogPostData(paths []interfaces.PostInfo) ([]interfaces.IPost, error) {
 	var blogPosts []interfaces.IPost
 	single := len(paths) == 1
@@ -46,8 +49,9 @@ func (c ContentGetter) GetBlogPostData(paths []interfaces.PostInfo) ([]interface
 	return blogPosts, nil
 }
 
+//NewBlogPost returns post info
 func NewBlogPost(single bool, name string, publishDate time.Time, content []byte) interfaces.IPost {
-	return interfaces.IPost(&Post{
+	return interfaces.IPost(&post{
 		single:      single,
 		name:        name,
 		publishDate: publishDate,
@@ -55,31 +59,31 @@ func NewBlogPost(single bool, name string, publishDate time.Time, content []byte
 	})
 }
 
-type Post struct {
+type post struct {
 	single      bool
 	name        string
 	publishDate time.Time
 	content     []byte
 }
 
-func (b Post) Content() template.HTML {
+func (b post) Content() template.HTML {
 	return template.HTML(b.content)
 }
 
-func (b *Post) Single() string {
+func (b *post) Single() string {
 	if b.single {
 		return "single-"
 	}
 	return ""
 }
 
-func (b *Post) GetDisplayName() string {
+func (b *post) GetDisplayName() string {
 	name := strings.Replace(b.name, "-", " ", -1)
 	name = strings.Replace(name, ".md", "", -1)
 	name = strings.Title(name)
 	return name
 }
 
-func (b *Post) PublishDate() string {
+func (b *post) PublishDate() string {
 	return b.publishDate.Format("Jan 2, 2006")
 }

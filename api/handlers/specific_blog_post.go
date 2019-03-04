@@ -10,14 +10,15 @@ import (
 	"net/http"
 )
 
+//SpecificBlogPost handler
 type SpecificBlogPost struct {
 	api.TemplateGetter
 	interfaces.PathGetter
 	api.IErrorHandler
 	contentGetter
-
 }
 
+//CreateSpecificBlogPostHandler returns new instance
 func CreateSpecificBlogPostHandler(
 	templateGetter api.TemplateGetter,
 	pathGetter interfaces.PathGetter,
@@ -28,9 +29,10 @@ func CreateSpecificBlogPostHandler(
 		TemplateGetter: templateGetter,
 		PathGetter:     pathGetter,
 		IErrorHandler:  handler,
-		contentGetter: contentGetter,
+		contentGetter:  contentGetter,
 	}
 }
+
 func (s SpecificBlogPost) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	year := vars["year"]

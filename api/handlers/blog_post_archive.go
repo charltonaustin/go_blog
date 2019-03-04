@@ -10,6 +10,7 @@ import (
 	"net/http"
 )
 
+//BlogPostArchive archived blog post handler
 type BlogPostArchive struct {
 	api.TemplateGetter
 	interfaces.PathGetter
@@ -17,6 +18,7 @@ type BlogPostArchive struct {
 	contentGetter
 }
 
+//CreateBlogPostArchiveHandler returns new BlogPostArchive
 func CreateBlogPostArchiveHandler(
 	getter api.TemplateGetter,
 	pathGetter interfaces.PathGetter,
@@ -27,9 +29,10 @@ func CreateBlogPostArchiveHandler(
 		TemplateGetter: getter,
 		PathGetter:     pathGetter,
 		IErrorHandler:  errorHandler,
-		contentGetter: contentGetter,
+		contentGetter:  contentGetter,
 	}
 }
+
 func (b BlogPostArchive) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	paths, err := b.GetBlogPostPaths()
 	if err != nil {

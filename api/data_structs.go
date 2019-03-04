@@ -4,6 +4,7 @@ import (
 	"go-blog/interfaces"
 )
 
+//BlogPage data object
 type BlogPage struct {
 	DescriptionTag string
 	Content        string
@@ -15,4 +16,3 @@ type BlogPage struct {
 	Next           string
 	ArchiveLinks   []interfaces.IArchiveLink
 }
-

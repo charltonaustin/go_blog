@@ -7,19 +7,20 @@ import (
 	"runtime/debug"
 )
 
+//RecoverHandler recovers from panic
 type RecoverHandler struct {
 	api.IErrorHandler
 }
 
-func NewRecoverHandler(handler api.IErrorHandler) RecoverHandler{
+//NewRecoverHandler returns new
+func NewRecoverHandler(handler api.IErrorHandler) RecoverHandler {
 	return RecoverHandler{
 		IErrorHandler: handler,
 	}
 }
 
-// AccessLogger is a handler decorator which logs the method, path, duration, and
-// status for every request
-func (rH RecoverHandler)RecoverFromPanic(h http.Handler) http.Handler {
+//RecoverFromPanic turns panics into 500s
+func (rH RecoverHandler) RecoverFromPanic(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if rec := recover(); rec != nil {

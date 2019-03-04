@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+//GetArchiveLinks returns archive links for the given post info
 func GetArchiveLinks(paths []interfaces.PostInfo) ([]interfaces.IArchiveLink, error) {
 	archiveSet := make(map[string]ArchiveLink)
 	for _, bpp := range paths {
@@ -30,19 +31,23 @@ func GetArchiveLinks(paths []interfaces.PostInfo) ([]interfaces.IArchiveLink, er
 	return links, nil
 }
 
+//NewArchiveLink creates new archive link
 func NewArchiveLink(date time.Time) ArchiveLink {
 	newDate := time.Date(date.Year(), date.Month()+1, 0, 0, 0, 0, 0, date.Location())
 	return ArchiveLink{date: newDate}
 }
 
+//ArchiveLink returns link info for archived link
 type ArchiveLink struct {
 	date time.Time
 }
 
+//LinkDate returns formatted link for display
 func (a ArchiveLink) LinkDate() string {
 	return a.date.Format("January 2006")
 }
 
+//LinkHref returns link location for clicking
 func (a ArchiveLink) LinkHref() string {
 	return a.date.Format("/2006/01")
 }

@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+//MainPage handler for main page
 type MainPage struct {
 	api.TemplateGetter
 	interfaces.PathGetter
@@ -15,6 +16,7 @@ type MainPage struct {
 	contentGetter
 }
 
+//CreateMainPageHandler returns new MainPage
 func CreateMainPageHandler(
 	getter api.TemplateGetter,
 	pathGetter interfaces.PathGetter,
@@ -25,9 +27,10 @@ func CreateMainPageHandler(
 		TemplateGetter: getter,
 		PathGetter:     pathGetter,
 		IErrorHandler:  errorHandler,
-		contentGetter: contentGetter,
+		contentGetter:  contentGetter,
 	}
 }
+
 func (m MainPage) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	paths, err := m.GetBlogPostPaths()
 	if err != nil {

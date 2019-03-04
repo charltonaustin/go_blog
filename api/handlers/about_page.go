@@ -7,12 +7,14 @@ import (
 	"net/http"
 )
 
+//AboutPage handler
 type AboutPage struct {
 	api.TemplateGetter
 	api.AboutContentGetter
 	api.IErrorHandler
 }
 
+//CreateAboutPageHandler returns a new about page handler
 func CreateAboutPageHandler(
 	templateGetter api.TemplateGetter,
 	contentGetter api.AboutContentGetter,

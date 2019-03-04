@@ -24,7 +24,7 @@ func main() {
 
 	// Set up dependencies
 	postGetter := blog.NewPostGetter(blogPostPath)
-	errorHandler := api.NewErrorHandler(blogPostPath)
+	errorHandler := api.NewErrorHandler(templates.NewErrorTemplateGetter(blogPostPath))
 	pathGetter := blog.NewPathGetter(blogPostPath)
 	templateGetter := templates.NewBlogTemplateGetter(blogPostPath)
 

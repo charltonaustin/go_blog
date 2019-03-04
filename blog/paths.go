@@ -12,16 +12,20 @@ import (
 	"time"
 )
 
+//PostGetter object for getting post data
 type PostGetter struct {
 	path string
 }
 
+//NewPathGetter returns new instance
 func NewPathGetter(path string) PostGetter {
 	return PostGetter{path}
 }
+
+//GetBlogPostPaths returns the blog post paths
 func (pg PostGetter) GetBlogPostPaths() (interfaces.PostFinder, error) {
-	pathMap := make(map[string]*PostPath)
-	var paths []*PostPath
+	pathMap := make(map[string]*postPath)
+	var paths []*postPath
 	fullPath := pg.path + "/published"
 	err := filepath.Walk(
 		fullPath,
@@ -29,12 +33,12 @@ func (pg PostGetter) GetBlogPostPaths() (interfaces.PostFinder, error) {
 			if !info.IsDir() && strings.Contains(info.Name(), ".md") {
 				path = strings.Replace(
 					path,
-					fullPath + "/",
+					fullPath+"/",
 					"",
 					-1,
 				)
 				date := strings.Split(path, "/")
-				postPath := PostPath{
+				postPath := postPath{
 					year:  date[0],
 					month: date[1],
 					day:   date[2],
@@ -62,17 +66,17 @@ func (pg PostGetter) GetBlogPostPaths() (interfaces.PostFinder, error) {
 		pathMap[key].location = i
 		p.location = i
 	}
-	return &PostPaths{pathMap: pathMap, paths: paths}, nil
+	return &postPaths{pathMap: pathMap, paths: paths}, nil
 }
 
-type PostPaths struct {
-	pathMap  map[string]*PostPath
-	paths    []*PostPath
+type postPaths struct {
+	pathMap  map[string]*postPath
+	paths    []*postPath
 	next     int
 	previous int
 }
 
-func (p *PostPaths) GetPaths() []interfaces.PostInfo {
+func (p *postPaths) GetPaths() []interfaces.PostInfo {
 	var postInfo []interfaces.PostInfo
 	for _, p := range p.paths {
 		postInfo = append(postInfo, interfaces.PostInfo(p))
@@ -80,7 +84,7 @@ func (p *PostPaths) GetPaths() []interfaces.PostInfo {
 	return postInfo
 }
 
-func (p *PostPaths) FromEnd(start int) []interfaces.PostInfo {
+func (p *postPaths) FromEnd(start int) []interfaces.PostInfo {
 	index := len(p.paths) - start
 	if index < 0 {
 		index = 0
@@ -92,7 +96,7 @@ func (p *PostPaths) FromEnd(start int) []interfaces.PostInfo {
 	return postInfo(paths)
 }
 
-func (p *PostPaths) GetPath(year, month, day, name string) []interfaces.PostInfo {
+func (p *postPaths) GetPath(year, month, day, name string) []interfaces.PostInfo {
 	path := p.pathMap[fmt.Sprintf("%v:%v:%v:%v", year, month, day, name)]
 	if path == nil {
 		return []interfaces.PostInfo{}
@@ -100,10 +104,10 @@ func (p *PostPaths) GetPath(year, month, day, name string) []interfaces.PostInfo
 
 	p.next = path.location - 1
 	p.previous = path.location + 1
-	return postInfo([]*PostPath{path})
+	return postInfo([]*postPath{path})
 }
 
-func postInfo(paths []*PostPath) []interfaces.PostInfo {
+func postInfo(paths []*postPath) []interfaces.PostInfo {
 	var postInfo []interfaces.PostInfo
 	for _, p := range paths {
 		postInfo = append(postInfo, interfaces.PostInfo(p))
@@ -111,8 +115,8 @@ func postInfo(paths []*PostPath) []interfaces.PostInfo {
 	return postInfo
 }
 
-func (p *PostPaths) GetArchive(year string, month string) []interfaces.PostInfo {
-	var postPaths []*PostPath
+func (p *postPaths) GetArchive(year string, month string) []interfaces.PostInfo {
+	var postPaths []*postPath
 	for key, value := range p.pathMap {
 		if strings.Contains(key, fmt.Sprintf("%v:%v", year, month)) {
 			postPaths = append(postPaths, value)
@@ -131,7 +135,7 @@ func (p *PostPaths) GetArchive(year string, month string) []interfaces.PostInfo 
 	return postInfo(postPaths)
 }
 
-func (p *PostPaths) GetNext() string {
+func (p *postPaths) GetNext() string {
 	index := p.next
 	if index < 0 {
 		index = 0
@@ -140,7 +144,7 @@ func (p *PostPaths) GetNext() string {
 	return fmt.Sprintf("/%v/%v/%v/%v", path.year, path.month, path.day, path.name)
 }
 
-func (p *PostPaths) GetPrevious() string {
+func (p *postPaths) GetPrevious() string {
 	if p.previous >= len(p.paths) {
 		return "/"
 	}
@@ -149,7 +153,7 @@ func (p *PostPaths) GetPrevious() string {
 
 }
 
-type PostPath struct {
+type postPath struct {
 	year     string
 	month    string
 	day      string
@@ -157,7 +161,7 @@ type PostPath struct {
 	location int
 }
 
-func (b PostPath) Date() (*time.Time, error) {
+func (b postPath) Date() (*time.Time, error) {
 	year, err := strconv.Atoi(b.year)
 	if err != nil {
 		log.Printf("failed to parse year %v with Atoi", b.Year())
@@ -179,19 +183,18 @@ func (b PostPath) Date() (*time.Time, error) {
 	return &date, nil
 }
 
-func (b PostPath) Name() string {
+func (b postPath) Name() string {
 	return b.name
 }
 
-func (b PostPath) Year() string {
+func (b postPath) Year() string {
 	return b.year
 }
 
-func (b PostPath) Month() string {
+func (b postPath) Month() string {
 	return b.month
 }
 
-
-func (b PostPath) Day() string {
+func (b postPath) Day() string {
 	return b.day
 }
