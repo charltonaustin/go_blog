@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"go-blog/api"
 	"go-blog/api/handlers"
+	"go-blog/api/middleware"
 	"go-blog/blog"
 	"go-blog/templates"
 	"log"
@@ -39,7 +40,7 @@ func main() {
 	router.
 		NotFoundHandler = api.NotFoundHandlerCreator()
 
-	router.Use()
+	router.Use(middleware.AccessLogger, middleware.RecoverFromPanic)
 	log.Printf("Listening on %v; ctrl + c to stop", ":9000")
 	http.ListenAndServe(":9000", router)
 }
