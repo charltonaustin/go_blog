@@ -2,14 +2,14 @@ package blog
 
 import "io/ioutil"
 
-type ContentGetter struct {
+type AboutContentGetter struct {
 	filePath string
 }
 
-func NewContentGetter(path string) ContentGetter{
-	return ContentGetter{filePath: path}
+func NewContentGetter(path string) AboutContentGetter {
+	return AboutContentGetter{filePath: path}
 }
 
-func (c ContentGetter) GetContent() ([]byte, error) {
-	return ioutil.ReadFile(c.filePath + "/blog-entries/about.md")
+func (c AboutContentGetter) GetContent() ([]byte, error) {
+	return ioutil.ReadFile(c.filePath + "/about.md")
 }

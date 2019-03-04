@@ -5,15 +5,16 @@ import (
 	"net/http"
 )
 
-func NotFoundHandlerCreator() http.Handler{
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		NotFound(w, r)
-	})
-
+type ErrorHandler struct {
+	path string
 }
 
-func NotFound(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("templates/error.html"))
+func NewErrorHandler(path string) ErrorHandler {
+	return ErrorHandler{path: path}
+}
+
+func (e ErrorHandler) NotFound(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles(e.path + "/templates/error.html"))
 	tmpl.Execute(w, struct {
 		Title   string
 		Message string
@@ -25,8 +26,8 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func InternalServerError(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("templates/error.html"))
+func (e ErrorHandler) InternalServerError(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles(e.path + "/templates/error.html"))
 	tmpl.Execute(w, struct {
 		Title   string
 		Message string

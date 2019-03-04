@@ -10,13 +10,23 @@ import (
 	"time"
 )
 
-func GetBlogPostData(paths []interfaces.PostInfo) ([]*Post, error) {
-	var blogPosts []*Post
+type ContentGetter struct {
+	path string
+}
+
+func NewPostGetter(path string) ContentGetter {
+	return ContentGetter{
+		path: path,
+	}
+}
+
+func (c ContentGetter) GetBlogPostData(paths []interfaces.PostInfo) ([]interfaces.IPost, error) {
+	var blogPosts []interfaces.IPost
 	single := len(paths) == 1
 	for i := len(paths) - 1; i >= 0; i-- {
 		blogPostInfo := paths[i]
 		content, err := ioutil.ReadFile(fmt.Sprintf(
-			"/Users/charltonaustin/dev/personal/blog-entries/published/%v/%v/%v/%v",
+			c.path+"/published/%v/%v/%v/%v",
 			blogPostInfo.Year(),
 			blogPostInfo.Month(),
 			blogPostInfo.Day(),
@@ -36,13 +46,13 @@ func GetBlogPostData(paths []interfaces.PostInfo) ([]*Post, error) {
 	return blogPosts, nil
 }
 
-func NewBlogPost(single bool, name string, publishDate time.Time, content []byte) *Post {
-	return &Post{
+func NewBlogPost(single bool, name string, publishDate time.Time, content []byte) interfaces.IPost {
+	return interfaces.IPost(&Post{
 		single:      single,
 		name:        name,
 		publishDate: publishDate,
 		content:     content,
-	}
+	})
 }
 
 type Post struct {

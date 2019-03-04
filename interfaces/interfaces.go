@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"html/template"
 	"io"
 	"time"
 )
@@ -28,4 +29,16 @@ type PostInfo interface {
 	Year() string
 	Month() string
 	Day() string
+}
+
+type IPost interface {
+	Content() template.HTML
+	Single() string
+	GetDisplayName() string
+	PublishDate() string
+}
+
+type IArchiveLink interface {
+	LinkDate() string
+	LinkHref() string
 }

@@ -10,43 +10,59 @@ import (
 	"net/http"
 )
 
-func CreateSpecificBlogPostHandler(templateGetter api.TemplateGetter, pathGetter interfaces.PathGetter) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		SpecificBlogPost(w, r, templateGetter, pathGetter)
-	})
+type SpecificBlogPost struct {
+	api.TemplateGetter
+	interfaces.PathGetter
+	api.IErrorHandler
+	contentGetter
+
 }
-func SpecificBlogPost(w http.ResponseWriter, r *http.Request, templateGetter api.TemplateGetter, pathGetter interfaces.PathGetter) {
+
+func CreateSpecificBlogPostHandler(
+	templateGetter api.TemplateGetter,
+	pathGetter interfaces.PathGetter,
+	handler api.ErrorHandler,
+	contentGetter contentGetter,
+) SpecificBlogPost {
+	return SpecificBlogPost{
+		TemplateGetter: templateGetter,
+		PathGetter:     pathGetter,
+		IErrorHandler:  handler,
+		contentGetter: contentGetter,
+	}
+}
+func (s SpecificBlogPost) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	year := vars["year"]
 	month := vars["month"]
 	day := vars["day"]
 	name := vars["name"]
-	paths, err := pathGetter.GetBlogPostPaths()
+	paths, err := s.GetBlogPostPaths()
 	if err != nil {
 		log.Printf("error %v", err)
-		api.InternalServerError(w, r)
+		s.InternalServerError(w, r)
 		return
 	}
 	path := paths.GetPath(year, month, day, name)
 	if len(path) == 0 {
-		api.NotFound(w, r)
+		s.NotFound(w, r)
 		return
 	}
-	blogPosts, err := blog.GetBlogPostData(path)
+	blogPosts, err := s.GetBlogPostData(path)
 	if err != nil {
 		log.Printf("error %v", err)
-		api.InternalServerError(w, r)
+		s.InternalServerError(w, r)
 		return
 	}
 
 	archiveLinks, err := blog.GetArchiveLinks(paths.GetPaths())
 	if err != nil {
 		log.Printf("error %v", err)
-		api.InternalServerError(w, r)
+		s.InternalServerError(w, r)
 		return
 	}
 
-	tmpl := templateGetter.GetTemplate()
+	tmpl := s.GetTemplate()
 	tmpl.Execute(w, api.BlogPage{
 		TitleTag:       fmt.Sprintf("Charlton Austin's Blog Technically Dazed And Confused a blog post about: %v", name),
 		DescriptionTag: fmt.Sprintf("Single article from: %v/%v/%v", year, month, day),

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"go-blog/blog"
+	"go-blog/interfaces"
 )
 
 type BlogPage struct {
@@ -10,9 +10,9 @@ type BlogPage struct {
 	TitleTag       string
 	HomeActive     string
 	AboutActive    string
-	BlogPosts      []*blog.Post
+	BlogPosts      []interfaces.IPost
 	Previous       string
 	Next           string
-	ArchiveLinks   []blog.ArchiveLink
+	ArchiveLinks   []interfaces.IArchiveLink
 }
 

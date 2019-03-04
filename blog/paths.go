@@ -16,13 +16,13 @@ type PostGetter struct {
 	path string
 }
 
-func NewBlogPostGetter(path string) PostGetter {
+func NewPathGetter(path string) PostGetter {
 	return PostGetter{path}
 }
 func (pg PostGetter) GetBlogPostPaths() (interfaces.PostFinder, error) {
 	pathMap := make(map[string]*PostPath)
 	var paths []*PostPath
-	fullPath := pg.path + "/blog-entries/published"
+	fullPath := pg.path + "/published"
 	err := filepath.Walk(
 		fullPath,
 		filepath.WalkFunc(func(path string, info os.FileInfo, err error) error {
@@ -89,7 +89,7 @@ func (p *PostPaths) FromEnd(start int) []interfaces.PostInfo {
 	paths := p.paths[index:]
 	p.next = p.paths[index].location - 1
 	p.previous = paths[len(paths)-1].location + 1
-	return postInfo(p)
+	return postInfo(paths)
 }
 
 func (p *PostPaths) GetPath(year, month, day, name string) []interfaces.PostInfo {
@@ -100,12 +100,12 @@ func (p *PostPaths) GetPath(year, month, day, name string) []interfaces.PostInfo
 
 	p.next = path.location - 1
 	p.previous = path.location + 1
-	return postInfo(p)
+	return postInfo([]*PostPath{path})
 }
 
-func postInfo(p *PostPaths) []interfaces.PostInfo {
+func postInfo(paths []*PostPath) []interfaces.PostInfo {
 	var postInfo []interfaces.PostInfo
-	for _, p := range p.paths {
+	for _, p := range paths {
 		postInfo = append(postInfo, interfaces.PostInfo(p))
 	}
 	return postInfo
@@ -128,7 +128,7 @@ func (p *PostPaths) GetArchive(year string, month string) []interfaces.PostInfo 
 	previous := path.location + 1
 	p.next = next
 	p.previous = previous
-	return postInfo(p)
+	return postInfo(postPaths)
 }
 
 func (p *PostPaths) GetNext() string {

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func GetArchiveLinks(paths []interfaces.PostInfo) ([]ArchiveLink, error) {
+func GetArchiveLinks(paths []interfaces.PostInfo) ([]interfaces.IArchiveLink, error) {
 	archiveSet := make(map[string]ArchiveLink)
 	for _, bpp := range paths {
 		date, err := bpp.Date()
@@ -22,7 +22,12 @@ func GetArchiveLinks(paths []interfaces.PostInfo) ([]ArchiveLink, error) {
 	sort.Slice(archiveLinks, func(i, j int) bool {
 		return archiveLinks[i].date.Before(archiveLinks[j].date)
 	})
-	return archiveLinks, nil
+
+	var links []interfaces.IArchiveLink
+	for _, link := range archiveLinks {
+		links = append(links, interfaces.IArchiveLink(link))
+	}
+	return links, nil
 }
 
 func NewArchiveLink(date time.Time) ArchiveLink {

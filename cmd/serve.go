@@ -20,43 +20,67 @@ func getEnv(key, fallback string) string {
 }
 
 func main() {
-	blogPostPath := getEnv("BLOG_POSTS", "/Users/charltonaustin/dev/personal")
+	blogPostPath := getEnv("BLOG_POSTS", "/Users/charltonaustin/dev/personal/blog-entries")
+
+	// Set up dependencies
+	postGetter := blog.NewPostGetter(blogPostPath)
+	errorHandler := api.NewErrorHandler(blogPostPath)
+	pathGetter := blog.NewPathGetter(blogPostPath)
+	templateGetter := templates.NewBlogTemplateGetter(blogPostPath)
+
+	// Set up routes
 	router := mux.NewRouter()
 	router.
 		Methods("GET").
 		Path("/{year}/{month}/{day}/{name}").
 		Handler(handlers.CreateSpecificBlogPostHandler(
-			templates.BlogTemplateGetter{},
-			blog.NewBlogPostGetter(blogPostPath),
+			templateGetter,
+			pathGetter,
+			errorHandler,
+			postGetter,
 		))
 
 	router.
 		Methods("GET").
 		Path("/{year}/{month}").
 		Handler(handlers.CreateBlogPostArchiveHandler(
-			templates.BlogTemplateGetter{},
-			blog.NewBlogPostGetter(blogPostPath),
+			templateGetter,
+			pathGetter,
+			errorHandler,
+			postGetter,
 		))
 
 	router.
 		Methods("GET").
 		Path("/").
-		Handler(handlers.CreateMainPageHandler(templates.BlogTemplateGetter{}, blog.NewBlogPostGetter(blogPostPath)))
+		Handler(handlers.CreateMainPageHandler(
+			templateGetter,
+			pathGetter,
+			errorHandler,
+			postGetter,
+		))
 
-	getter := blog.NewContentGetter(blogPostPath)
 	router.
 		Methods("GET").
 		Path("/about").
-		Handler(handlers.CreateAboutPageHandler(templates.AboutPageGetter{}, getter))
+		Handler(handlers.CreateAboutPageHandler(
+			templates.NewAboutPageGetter(blogPostPath),
+			blog.NewContentGetter(blogPostPath),
+			errorHandler,
+		))
 
 	router.
 		PathPrefix("/static/").
-		Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/public"))))
+		Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(blogPostPath+"static/public"))))
 
-	router.
-		NotFoundHandler = api.NotFoundHandlerCreator()
+	router.NotFoundHandler = http.HandlerFunc(errorHandler.NotFound)
 
-	router.Use(middleware.AccessLogger, middleware.RecoverFromPanic)
-	log.Printf("Listening on %v; ctrl + c to stop", ":9000")
-	http.ListenAndServe(":9000", router)
+	router.Use(
+		middleware.AccessLogger,
+		middleware.NewRecoverHandler(errorHandler).RecoverFromPanic,
+	)
+
+	port := getEnv("BLOG_PORT", ":3000")
+	log.Printf("Listening on %v; ctrl + c to stop", port)
+	http.ListenAndServe(port, router)
 }

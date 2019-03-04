@@ -7,20 +7,32 @@ import (
 	"net/http"
 )
 
-func CreateAboutPageHandler(templateGetter api.TemplateGetter, contentGetter api.ContentGetter) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		AboutPage(w, r, templateGetter, contentGetter)
-	})
+type AboutPage struct {
+	api.TemplateGetter
+	api.AboutContentGetter
+	api.IErrorHandler
 }
 
-func AboutPage(w http.ResponseWriter, r *http.Request, templateGetter api.TemplateGetter, contentGetter api.ContentGetter) {
-	content, err := contentGetter.GetContent()
+func CreateAboutPageHandler(
+	templateGetter api.TemplateGetter,
+	contentGetter api.AboutContentGetter,
+	iErrorHandler api.IErrorHandler,
+) AboutPage {
+	return AboutPage{
+		TemplateGetter:     templateGetter,
+		AboutContentGetter: contentGetter,
+		IErrorHandler:      iErrorHandler,
+	}
+}
+
+func (a AboutPage) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	content, err := a.GetContent()
 	if err != nil {
-		api.InternalServerError(w, r)
+		a.InternalServerError(w, r)
 		return
 	}
 	output := markdown.ToHTML(content, nil, nil)
-	tmpl := templateGetter.GetTemplate()
+	tmpl := a.GetTemplate()
 	err = tmpl.Execute(w, aboutPage{
 		TitleTag:       "Charlton Austin's Blog Technically Dazed And Confused About Page",
 		DescriptionTag: "A page describin who I am and what I'm doing with this blog.",
@@ -29,7 +41,7 @@ func AboutPage(w http.ResponseWriter, r *http.Request, templateGetter api.Templa
 		AboutActive:    "active",
 	})
 	if err != nil {
-		api.InternalServerError(w, r)
+		a.InternalServerError(w, r)
 	}
 }
 

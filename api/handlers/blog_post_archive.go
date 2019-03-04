@@ -10,16 +10,31 @@ import (
 	"net/http"
 )
 
-func CreateBlogPostArchiveHandler(getter api.TemplateGetter, pathGetter interfaces.PathGetter) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		BlogPostArchive(w, r, getter, pathGetter)
-	})
+type BlogPostArchive struct {
+	api.TemplateGetter
+	interfaces.PathGetter
+	api.IErrorHandler
+	contentGetter
 }
-func BlogPostArchive(w http.ResponseWriter, r *http.Request, getter api.TemplateGetter, pathGetter interfaces.PathGetter) {
-	paths, err := pathGetter.GetBlogPostPaths()
+
+func CreateBlogPostArchiveHandler(
+	getter api.TemplateGetter,
+	pathGetter interfaces.PathGetter,
+	errorHandler api.IErrorHandler,
+	contentGetter contentGetter,
+) BlogPostArchive {
+	return BlogPostArchive{
+		TemplateGetter: getter,
+		PathGetter:     pathGetter,
+		IErrorHandler:  errorHandler,
+		contentGetter: contentGetter,
+	}
+}
+func (b BlogPostArchive) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	paths, err := b.GetBlogPostPaths()
 	if err != nil {
 		log.Printf("error %v", err)
-		api.InternalServerError(w, r)
+		b.InternalServerError(w, r)
 		return
 	}
 
@@ -28,27 +43,32 @@ func BlogPostArchive(w http.ResponseWriter, r *http.Request, getter api.Template
 	month := vars["month"]
 	archive := paths.GetArchive(year, month)
 	if len(archive) == 0 {
-		api.NotFound(w, r)
+		b.NotFound(w, r)
 		return
 	}
 
-	posts, err := blog.GetBlogPostData(archive)
+	posts, err := b.GetBlogPostData(archive)
 	if err != nil {
 		log.Printf("error %v", err)
-		api.InternalServerError(w, r)
+		b.InternalServerError(w, r)
 		return
 	}
 
 	archiveLinks, err := blog.GetArchiveLinks(paths.GetPaths())
 	if err != nil {
 		log.Printf("error %v", err)
-		api.InternalServerError(w, r)
+		b.InternalServerError(w, r)
 		return
 	}
 
-	tmpl := getter.GetTemplate()
+	tmpl := b.GetTemplate()
+	title := fmt.Sprintf(
+		"Charlton Austin's Blog Technically Dazed And Confused blog posts from: %v/%v",
+		year,
+		month,
+	)
 	tmpl.Execute(w, api.BlogPage{
-		TitleTag:       fmt.Sprintf("Charlton Austin's Blog Technically Dazed And Confused blog posts from: %v/%v", year, month),
+		TitleTag:       title,
 		DescriptionTag: fmt.Sprintf("This is all the blog posts I wrote from %v/%v", year, month),
 		HomeActive:     "active",
 		AboutActive:    "",
