@@ -1,4 +1,4 @@
-module go-api
+module go-blog
 
 require (
 	github.com/gomarkdown/markdown v0.0.0-20190222000725-ee6a7931a1e4

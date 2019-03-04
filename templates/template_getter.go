@@ -1,7 +1,7 @@
 package templates
 
 import (
-	"go-api/interfaces"
+	"go-blog/interfaces"
 	"html/template"
 )
 

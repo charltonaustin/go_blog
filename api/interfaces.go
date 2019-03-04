@@ -1,6 +1,6 @@
 package api
 
-import "go-api/interfaces"
+import "go-blog/interfaces"
 
 type TemplateGetter interface {
 	GetTemplate() interfaces.Executor

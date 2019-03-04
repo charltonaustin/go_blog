@@ -1,7 +1,7 @@
 package api
 
 import (
-	"go-api/blog"
+	"go-blog/blog"
 )
 
 type BlogPage struct {

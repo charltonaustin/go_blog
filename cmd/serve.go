@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/gorilla/mux"
-	"go-api/api"
-	"go-api/api/handlers"
-	"go-api/blog"
-	"go-api/templates"
+	"go-blog/api"
+	"go-blog/api/handlers"
+	"go-blog/blog"
+	"go-blog/templates"
 	"log"
 	"net/http"
 )
@@ -39,6 +39,7 @@ func main() {
 	router.
 		NotFoundHandler = api.NotFoundHandlerCreator()
 
+	router.Use()
 	log.Printf("Listening on %v; ctrl + c to stop", ":9000")
 	http.ListenAndServe(":9000", router)
 }

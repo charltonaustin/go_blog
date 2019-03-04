@@ -3,8 +3,8 @@ package handlers
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"go-api/api"
-	"go-api/blog"
+	"go-blog/api"
+	"go-blog/blog"
 	"net/http"
 )
 

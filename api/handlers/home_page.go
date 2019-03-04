@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"go-api/api"
-	"go-api/blog"
+	"go-blog/api"
+	"go-blog/blog"
 	"net/http"
 )
 

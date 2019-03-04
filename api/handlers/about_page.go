@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/gomarkdown/markdown"
-	"go-api/api"
+	"go-blog/api"
 	"html/template"
 	"net/http"
 )
