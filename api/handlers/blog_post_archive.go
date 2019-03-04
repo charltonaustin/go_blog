@@ -5,17 +5,20 @@ import (
 	"github.com/gorilla/mux"
 	"go-blog/api"
 	"go-blog/blog"
+	"go-blog/interfaces"
+	"log"
 	"net/http"
 )
 
-func CreateBlogPostArchiveHandler(getter api.TemplateGetter) http.Handler {
+func CreateBlogPostArchiveHandler(getter api.TemplateGetter, pathGetter interfaces.PathGetter) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		BlogPostArchive(w, r, getter)
+		BlogPostArchive(w, r, getter, pathGetter)
 	})
 }
-func BlogPostArchive(w http.ResponseWriter, r *http.Request, getter api.TemplateGetter) {
-	paths, err := blog.GetBlogPostPaths()
+func BlogPostArchive(w http.ResponseWriter, r *http.Request, getter api.TemplateGetter, pathGetter interfaces.PathGetter) {
+	paths, err := pathGetter.GetBlogPostPaths()
 	if err != nil {
+		log.Printf("error %v", err)
 		api.InternalServerError(w, r)
 		return
 	}
@@ -31,12 +34,14 @@ func BlogPostArchive(w http.ResponseWriter, r *http.Request, getter api.Template
 
 	posts, err := blog.GetBlogPostData(archive)
 	if err != nil {
+		log.Printf("error %v", err)
 		api.InternalServerError(w, r)
 		return
 	}
 
 	archiveLinks, err := blog.GetArchiveLinks(paths.GetPaths())
 	if err != nil {
+		log.Printf("error %v", err)
 		api.InternalServerError(w, r)
 		return
 	}

@@ -5,22 +5,25 @@ import (
 	"github.com/gorilla/mux"
 	"go-blog/api"
 	"go-blog/blog"
+	"go-blog/interfaces"
+	"log"
 	"net/http"
 )
 
-func CreateSpecificBlogPostHandler(templateGetter api.TemplateGetter) http.Handler {
+func CreateSpecificBlogPostHandler(templateGetter api.TemplateGetter, pathGetter interfaces.PathGetter) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		SpecificBlogPost(w, r, templateGetter)
+		SpecificBlogPost(w, r, templateGetter, pathGetter)
 	})
 }
-func SpecificBlogPost(w http.ResponseWriter, r *http.Request, templateGetter api.TemplateGetter) {
+func SpecificBlogPost(w http.ResponseWriter, r *http.Request, templateGetter api.TemplateGetter, pathGetter interfaces.PathGetter) {
 	vars := mux.Vars(r)
 	year := vars["year"]
 	month := vars["month"]
 	day := vars["day"]
 	name := vars["name"]
-	paths, err := blog.GetBlogPostPaths()
+	paths, err := pathGetter.GetBlogPostPaths()
 	if err != nil {
+		log.Printf("error %v", err)
 		api.InternalServerError(w, r)
 		return
 	}
@@ -31,12 +34,14 @@ func SpecificBlogPost(w http.ResponseWriter, r *http.Request, templateGetter api
 	}
 	blogPosts, err := blog.GetBlogPostData(path)
 	if err != nil {
+		log.Printf("error %v", err)
 		api.InternalServerError(w, r)
 		return
 	}
 
 	archiveLinks, err := blog.GetArchiveLinks(paths.GetPaths())
 	if err != nil {
+		log.Printf("error %v", err)
 		api.InternalServerError(w, r)
 		return
 	}

@@ -1,11 +1,13 @@
 package api
 
-import "go-blog/interfaces"
+import (
+	"go-blog/interfaces"
+)
 
 type TemplateGetter interface {
 	GetTemplate() interfaces.Executor
 }
 
 type ContentGetter interface {
-	GetContent()([]byte, error)
+	GetContent() ([]byte, error)
 }

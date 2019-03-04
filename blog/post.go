@@ -3,18 +3,25 @@ package blog
 import (
 	"fmt"
 	"github.com/gomarkdown/markdown"
+	"go-blog/interfaces"
 	"html/template"
 	"io/ioutil"
 	"strings"
 	"time"
 )
 
-func GetBlogPostData(paths []*postPath) ([]*Post, error) {
+func GetBlogPostData(paths []interfaces.PostInfo) ([]*Post, error) {
 	var blogPosts []*Post
 	single := len(paths) == 1
 	for i := len(paths) - 1; i >= 0; i-- {
 		blogPostInfo := paths[i]
-		content, err := ioutil.ReadFile(fmt.Sprintf("/Users/charltonaustin/dev/personal/blog-entries/published/%v/%v/%v/%v", blogPostInfo.year, blogPostInfo.month, blogPostInfo.day, blogPostInfo.name))
+		content, err := ioutil.ReadFile(fmt.Sprintf(
+			"/Users/charltonaustin/dev/personal/blog-entries/published/%v/%v/%v/%v",
+			blogPostInfo.Year(),
+			blogPostInfo.Month(),
+			blogPostInfo.Day(),
+			blogPostInfo.Name()),
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -24,7 +31,7 @@ func GetBlogPostData(paths []*postPath) ([]*Post, error) {
 		if err != nil {
 			return nil, err
 		}
-		blogPosts = append(blogPosts, NewBlogPost(single, blogPostInfo.name, *date, output))
+		blogPosts = append(blogPosts, NewBlogPost(single, blogPostInfo.Name(), *date, output))
 	}
 	return blogPosts, nil
 }

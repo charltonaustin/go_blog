@@ -3,9 +3,13 @@ package blog
 import "io/ioutil"
 
 type ContentGetter struct {
-
+	filePath string
 }
 
-func (c ContentGetter)GetContent()([]byte, error){
-	return ioutil.ReadFile("/Users/charltonaustin/dev/personal/blog-entries/about.md")
+func NewContentGetter(path string) ContentGetter{
+	return ContentGetter{filePath: path}
+}
+
+func (c ContentGetter) GetContent() ([]byte, error) {
+	return ioutil.ReadFile(c.filePath + "/blog-entries/about.md")
 }

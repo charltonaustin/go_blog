@@ -9,29 +9,45 @@ import (
 	"go-blog/templates"
 	"log"
 	"net/http"
+	"os"
 )
 
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}
+
 func main() {
+	blogPostPath := getEnv("BLOG_POSTS", "/Users/charltonaustin/dev/personal")
 	router := mux.NewRouter()
 	router.
 		Methods("GET").
 		Path("/{year}/{month}/{day}/{name}").
-		Handler(handlers.CreateSpecificBlogPostHandler(templates.BlogTemplateGetter{}))
+		Handler(handlers.CreateSpecificBlogPostHandler(
+			templates.BlogTemplateGetter{},
+			blog.NewBlogPostGetter(blogPostPath),
+		))
 
 	router.
 		Methods("GET").
 		Path("/{year}/{month}").
-		Handler(handlers.CreateBlogPostArchiveHandler(templates.BlogTemplateGetter{}))
+		Handler(handlers.CreateBlogPostArchiveHandler(
+			templates.BlogTemplateGetter{},
+			blog.NewBlogPostGetter(blogPostPath),
+		))
 
 	router.
 		Methods("GET").
 		Path("/").
-		Handler(handlers.CreateMainPageHandler(templates.BlogTemplateGetter{}))
+		Handler(handlers.CreateMainPageHandler(templates.BlogTemplateGetter{}, blog.NewBlogPostGetter(blogPostPath)))
 
+	getter := blog.NewContentGetter(blogPostPath)
 	router.
 		Methods("GET").
 		Path("/about").
-		Handler(handlers.CreateAboutPageHandler(templates.AboutPageGetter{}, blog.ContentGetter{}))
+		Handler(handlers.CreateAboutPageHandler(templates.AboutPageGetter{}, getter))
 
 	router.
 		PathPrefix("/static/").

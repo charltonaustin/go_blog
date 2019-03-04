@@ -3,28 +3,33 @@ package handlers
 import (
 	"go-blog/api"
 	"go-blog/blog"
+	"go-blog/interfaces"
+	"log"
 	"net/http"
 )
 
-func CreateMainPageHandler(getter api.TemplateGetter) http.Handler {
+func CreateMainPageHandler(getter api.TemplateGetter, pathGetter interfaces.PathGetter) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		MainPage(w, r, getter)
+		MainPage(w, r, getter, pathGetter)
 	})
 }
-func MainPage(w http.ResponseWriter, r *http.Request, getter api.TemplateGetter) {
-	paths, err := blog.GetBlogPostPaths()
+func MainPage(w http.ResponseWriter, r *http.Request, getter api.TemplateGetter, pathGetter interfaces.PathGetter) {
+	paths, err := pathGetter.GetBlogPostPaths()
 	if err != nil {
+		log.Printf("error %v", err)
 		api.InternalServerError(w, r)
 		return
 	}
 	blogPosts, err := blog.GetBlogPostData(paths.FromEnd(3))
 	if err != nil {
+		log.Printf("error %v", err)
 		api.InternalServerError(w, r)
 		return
 	}
 
 	archiveLinks, err := blog.GetArchiveLinks(paths.GetPaths())
 	if err != nil {
+		log.Printf("error %v", err)
 		api.InternalServerError(w, r)
 		return
 	}
