@@ -70,6 +70,15 @@ func main() {
 		))
 
 	router.
+		Methods("GET").
+		Path("/consulting").
+		Handler(handlers.CreateConsultingPageHandler(
+			templates.NewConsultingPageGetter(blogPostPath),
+			blog.NewContentGetter(blogPostPath),
+			errorHandler,
+		))
+
+	router.
 		PathPrefix("/static/").
 		Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(blogPostPath+"static/public"))))
 

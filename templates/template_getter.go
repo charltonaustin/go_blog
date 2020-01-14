@@ -58,3 +58,21 @@ func (a AboutPageGetter) GetTemplate() interfaces.Executor {
 		a.path+"/templates/about.html",
 	))
 }
+
+//ConsultingPageGetter gets templates for about page
+type ConsultingPageGetter struct {
+	path string
+}
+
+//NewAboutPageGetter returns new
+func NewConsultingPageGetter(path string) ConsultingPageGetter {
+	return ConsultingPageGetter{path: path}
+}
+
+//GetTemplate gets templates for about page
+func (a ConsultingPageGetter) GetTemplate() interfaces.Executor {
+	return template.Must(template.ParseFiles(
+		a.path+"/templates/base.html",
+		a.path+"/templates/consulting.html",
+	))
+}
